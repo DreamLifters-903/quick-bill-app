@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, Pencil, Trash2, Receipt, Calendar, Hash, Save } from "lucide-react";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 // Demo items with static prices
 const DEMO_ITEMS = [
@@ -30,12 +32,6 @@ interface BillItem {
   amount: number;
 }
 
-const generateOrderNumber = () => {
-  const prefix = "ORD";
-  const random = Math.floor(Math.random() * 9000) + 1000;
-  return `${prefix}-${random}`;
-};
-
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", {
     weekday: "short",
@@ -45,8 +41,8 @@ const formatDate = (date: Date) => {
   });
 };
 
-const Index = () => {
-  const [orderNumber] = useState(generateOrderNumber());
+const BillingContent = () => {
+  const [orderNumber, setOrderNumber] = useState(1);
   const [currentDate] = useState(formatDate(new Date()));
   
   const [searchTerm, setSearchTerm] = useState("");
@@ -138,15 +134,18 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
+    <div className="flex-1 min-h-screen bg-background p-4 md:p-6 lg:p-8 overflow-auto">
       <div className="mx-auto max-w-4xl space-y-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 text-primary mb-2">
-            <Receipt className="h-8 w-8" />
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Quick Bill</h1>
+        <div className="flex items-center gap-4 mb-8">
+          <SidebarTrigger className="md:hidden h-10 w-10 bg-secondary rounded-lg" />
+          <div className="flex-1 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 text-primary mb-2">
+              <Receipt className="h-8 w-8" />
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">Quick Bill</h1>
+            </div>
+            <p className="text-muted-foreground text-sm">Fast & Simple Billing System</p>
           </div>
-          <p className="text-muted-foreground text-sm">Fast & Simple Billing System</p>
         </div>
 
         {/* Order Info Card */}
@@ -158,7 +157,7 @@ const Index = () => {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Order Number</p>
-                <p className="text-lg font-semibold text-foreground">{orderNumber}</p>
+                <p className="text-lg font-semibold text-foreground">#{orderNumber}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -338,6 +337,17 @@ const Index = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const Index = () => {
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <BillingContent />
+      </div>
+    </SidebarProvider>
   );
 };
 
